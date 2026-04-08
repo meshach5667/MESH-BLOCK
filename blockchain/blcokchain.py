@@ -3,11 +3,13 @@ from .block import Block
 
 class Blockchain:
     def __init__(self, difficulty=3):
-        self.chain = [self.create_genesis_block()]
         self.difficulty = difficulty
+        self.chain = [self.create_genesis_block()]
 
     def create_genesis_block(self):
-        return Block(0, "Genesis Block", "0")
+        genesis_block = Block(0, "Genesis Block", "0")
+        genesis_block.mine_block(self.difficulty)
+        return genesis_block
 
     def get_latest_block(self):
         return self.chain[-1]
@@ -24,6 +26,7 @@ class Blockchain:
         new_block.mine_block(self.difficulty)
         self.chain.append(new_block)
         print("Block added successfully.\n")
+        return new_block
 
     def is_chain_valid(self):
         for i in range(1, len(self.chain)):
@@ -39,10 +42,14 @@ class Blockchain:
                 print(f"Broken chain link at block {current_block.index}")
                 return False
 
+            if not current_block.hash.startswith("0" * self.difficulty):
+                print(f"Block {current_block.index} was not properly mined")
+                return False
+
         return True
 
     def display_chain(self):
-        print("\n== BLOCKCHAIN ==")
+        print("\n========== BLOCKCHAIN ==========")
         for block in self.chain:
             print(f"Block {block.index}")
             print(f"Timestamp     : {block.timestamp}")
@@ -51,13 +58,26 @@ class Blockchain:
             print(f"Hash          : {block.hash}")
             print(f"Nonce         : {block.nonce}")
             print("-" * 40)
-        print("==\n")
+        print("================================\n")
 
     def tamper_block(self, index, new_data):
         if index <= 0 or index >= len(self.chain):
             print("Invalid block index. You cannot tamper with genesis block or non-existent block.")
-            return
+            return None
 
         self.chain[index].data = new_data
         self.chain[index].hash = self.chain[index].calculate_hash()
         print(f"Block {index} has been tampered with.\n")
+        return self.chain[index]
+
+    def get_chain(self):
+        return [block.to_dict() for block in self.chain]
+
+    def get_stats(self):
+        latest_block = self.get_latest_block()
+        return {
+            "total_blocks": len(self.chain),
+            "difficulty": self.difficulty,
+            "is_valid": self.is_chain_valid(),
+            "latest_hash": latest_block.hash,
+        }
