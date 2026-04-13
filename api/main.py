@@ -1,8 +1,19 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from blockchain import Blockchain
-from api.schemas import BlockCreate, TamperRequest
+import sys
+from pathlib import Path
+
+try:
+    from blockchain import Blockchain
+except ModuleNotFoundError:
+    sys.path.append(str(Path(__file__).resolve().parents[1]))
+    from blockchain import Blockchain
+
+try:
+    from api.schemas import BlockCreate, TamperRequest
+except ModuleNotFoundError:
+    from schemas import BlockCreate, TamperRequest
 
 app = FastAPI(title="Blockchain Simulator API")
 

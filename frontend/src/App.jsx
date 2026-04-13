@@ -1,121 +1,152 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from "react";
+import AddBlockForm from "./components/AddBlockForm";
+import BlockCard from "./components/BlockCard";
+import DashboardCard from "./components/DashboardCard";
+import MessageBanner from "./components/MessageBanner";
+import SectionTitle from "./components/SectionTitle";
+import TamperForm from "./components/TamperForm";
+import {
+  addBlock,
+  getBlocks,
+  getStats,
+  tamperBlock,
+  validateChain,
+} from "./services/api";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [blocks, setBlocks] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
+  const [loading, setLoading] = useState(false);
+
+  const loadData = async () => {
+    try {
+      const [blocksData, statsData] = await Promise.all([getBlocks(), getStats()]);
+      setBlocks(blocksData);
+      setStats(statsData);
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleAddBlock = async (blockData) => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await addBlock(blockData);
+      setMessage(response.message);
+      setMessageType("success");
+      await loadData();
+      return true;
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTamper = async (index, newData) => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await tamperBlock(index, newData);
+      setMessage(response.message);
+      setMessageType("warning");
+      await loadData();
+      return true;
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleValidate = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await validateChain();
+      if (response.is_valid) {
+        setMessage("Blockchain is valid.");
+        setMessageType("success");
+      } else {
+        setMessage("Blockchain is NOT valid.");
+        setMessageType("error");
+      }
+      await loadData();
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app-shell">
+      <header className="hero">
+        <div className="hero-text">
+          <h1>Blockchain Simulation Dashboard</h1>
+          <p>CYB 322 — Cybersecurity Innovation &amp; New Technologies</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
+      </header>
+
+      <MessageBanner message={message} type={messageType} />
+
+      <section className="section">
+        <SectionTitle
+          title="System Overview"
+          subtitle="A simple web interface for monitoring blocks, Proof of Work, chain validity, and tampering tests."
+        />
+
+        {stats && (
+          <div className="dashboard-grid">
+            <DashboardCard title="Total Blocks" value={stats.total_blocks} />
+            <DashboardCard title="Difficulty" value={stats.difficulty} />
+            <DashboardCard title="Chain Status" value={stats.is_valid ? "Valid" : "Invalid"} />
+            <DashboardCard title="Latest Hash" value={stats.latest_hash} longText />
+          </div>
+        )}
+      </section>
+
+      <section className="section form-grid">
+        <AddBlockForm onAddBlock={handleAddBlock} loading={loading} />
+        <TamperForm onTamper={handleTamper} loading={loading} />
+      </section>
+
+      <section className="section validate-section">
+        <button className="btn primary-btn validate-btn" onClick={handleValidate} disabled={loading}>
+          {loading ? "Please wait..." : "Validate Blockchain"}
         </button>
       </section>
 
-      <div className="ticks"></div>
+      <section className="section">
+        <SectionTitle
+          title="Blockchain Records"
+          subtitle="Each block contains its own hash, previous hash, timestamp, transaction data, and nonce."
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div className="blocks-grid">
+          {blocks.length > 0 ? (
+            blocks.map((block) => <BlockCard key={block.index} block={block} />)
+          ) : (
+            <div className="empty-state">No blocks found.</div>
+          )}
         </div>
       </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App
