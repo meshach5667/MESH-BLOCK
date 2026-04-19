@@ -163,15 +163,7 @@ The frontend provides an interactive interface for users.
 
 ---
 
-##  Visualization Dashboard
 
-Displays:
-- Total blocks  
-- Mining difficulty  
-- Blockchain validity  
-- Latest block hash  
-
----
 
 ## ▶ How to Run the Project
 
