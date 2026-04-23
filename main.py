@@ -34,6 +34,40 @@ def main():
                 print("Please enter a valid number.\n")
 
         elif choice == "5":
+            audit = blockchain.audit_chain()
+            print(f"\n{'='*50}")
+            print(f"  FORENSIC AUDIT REPORT")
+            print(f"{'='*50}")
+            print(f"  Chain Status : {audit['chain_status']}")
+            print(f"  Total Blocks : {audit['total_blocks']}")
+            print(f"  Compromised  : {audit['compromised_blocks']}")
+            if audit['first_compromised_index'] is not None:
+                print(f"  First Breach : Block #{audit['first_compromised_index']}")
+            print(f"{'='*50}")
+            for block_report in audit['blocks']:
+                status = "CRITICAL" if block_report['severity'] == 'critical' else "CLEAN"
+                print(f"\n  Block #{block_report['index']} [{status}]")
+                for finding in block_report['findings']:
+                    icon = "✓" if finding['status'] == 'PASS' else "✗"
+                    print(f"    {icon} {finding['check']}: {finding['detail']}")
+            print(f"\n{'='*50}\n")
+
+        elif choice == "6":
+            result = blockchain.repair_chain()
+            print(f"\n{result['message']}\n")
+
+        elif choice == "7":
+            try:
+                index = int(input("Rollback to which block index? (all blocks from this index onward will be discarded): ").strip())
+                result = blockchain.rollback_to(index)
+                if result is None:
+                    print("Invalid rollback index.\n")
+                else:
+                    print(f"\n{result['message']}\n")
+            except ValueError:
+                print("Please enter a valid number.\n")
+
+        elif choice == "8":
             print("Exiting program.")
             break
 

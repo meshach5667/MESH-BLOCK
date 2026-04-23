@@ -11,9 +11,9 @@ except ModuleNotFoundError:
     from blockchain import Blockchain
 
 try:
-    from api.schemas import BlockCreate, TamperRequest
+    from api.schemas import BlockCreate, TamperRequest, RollbackRequest
 except ModuleNotFoundError:
-    from schemas import BlockCreate, TamperRequest
+    from schemas import BlockCreate, TamperRequest, RollbackRequest
 
 app = FastAPI(title="Blockchain Simulator API")
 
@@ -71,3 +71,28 @@ def tamper(payload: TamperRequest):
         "message": f"Block {payload.index} tampered successfully",
         "block": block.to_dict()
     }
+
+
+# ── Incident Response Endpoints ──────────────────────────────
+
+@app.get("/audit")
+def audit_chain():
+    """Forensic scan — identify exactly which blocks are compromised and why."""
+    return blockchain.audit_chain()
+
+
+@app.post("/rollback")
+def rollback(payload: RollbackRequest):
+    """Rollback to a known-good checkpoint, discarding compromised blocks."""
+    result = blockchain.rollback_to(payload.index)
+
+    if result is None:
+        raise HTTPException(status_code=400, detail="Invalid rollback index")
+
+    return result
+
+
+@app.post("/repair")
+def repair():
+    """Re-mine compromised blocks to restore chain integrity."""
+    return blockchain.repair_chain()

@@ -4,4 +4,7 @@ def print_menu():
     print("2. View blockchain")
     print("3. Validate blockchain")
     print("4. Tamper with a block")
-    print("5. Exit")
+    print("5. Forensic audit")
+    print("6. Repair chain (re-mine)")
+    print("7. Rollback to checkpoint")
+    print("8. Exit")

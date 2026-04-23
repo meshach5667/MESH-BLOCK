@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Activity, Clock, Hash, Layers } from "lucide-react";
+import { Activity, Hash, Layers, Search } from "lucide-react";
 
 import Layout from "./components/Layout";
 import AddBlockForm from "./components/AddBlockForm";
 import BlockCard from "./components/BlockCard";
 import DashboardCard from "./components/DashboardCard";
-import SectionTitle from "./components/SectionTitle";
 import TamperForm from "./components/TamperForm";
+import AuditPanel from "./components/AuditPanel";
 import {
   addBlock,
   getBlocks,
   getStats,
   tamperBlock,
   validateChain,
+  auditChain,
+  rollbackChain,
+  repairChain,
 } from "./services/api";
 
 export default function App() {
@@ -23,10 +26,11 @@ export default function App() {
   const [messageType, setMessageType] = useState("info");
   const [loading, setLoading] = useState(false);
   const [chainValid, setChainValid] = useState(true);
+  const [auditReport, setAuditReport] = useState(null);
 
   useEffect(() => {
     if (message) {
-      const timer = setTimeout(() => setMessage(""), 5000);
+      const timer = setTimeout(() => setMessage(""), 6000);
       return () => clearTimeout(timer);
     }
   }, [message]);
@@ -54,6 +58,7 @@ export default function App() {
       const response = await addBlock(blockData);
       setMessage(response.message);
       setMessageType("success");
+      setAuditReport(null);
       await loadData();
       return true;
     } catch (error) {
@@ -71,6 +76,7 @@ export default function App() {
       const response = await tamperBlock(index, newData);
       setMessage(response.message);
       setMessageType("error");
+      setAuditReport(null);
       await loadData();
       return true;
     } catch (error) {
@@ -90,10 +96,62 @@ export default function App() {
         setMessage("Chain integrity confirmed. Network secure.");
         setMessageType("success");
       } else {
-        setMessage("Chain integrity failure. Tampering detected.");
+        setMessage("Chain integrity failure. Tampering detected. Run a forensic audit.");
         setMessageType("error");
       }
       setChainValid(response.is_valid);
+      await loadData();
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAudit = async () => {
+    setLoading(true);
+    try {
+      const report = await auditChain();
+      setAuditReport(report);
+      if (report.chain_status === "COMPROMISED") {
+        setMessage(`Forensic scan complete. ${report.compromised_blocks} compromised block(s) identified.`);
+        setMessageType("error");
+      } else {
+        setMessage("Forensic scan complete. No anomalies detected.");
+        setMessageType("success");
+      }
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRepair = async () => {
+    setLoading(true);
+    try {
+      const response = await repairChain();
+      setMessage(response.message);
+      setMessageType("success");
+      setAuditReport(null);
+      await loadData();
+    } catch (error) {
+      setMessage(error.message);
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRollback = async (index) => {
+    setLoading(true);
+    try {
+      const response = await rollbackChain(index);
+      setMessage(response.message);
+      setMessageType("success");
+      setAuditReport(null);
       await loadData();
     } catch (error) {
       setMessage(error.message);
@@ -150,7 +208,33 @@ export default function App() {
         >
           {loading ? "Verifying..." : "Validate Chain Integrity"}
         </button>
+        {!chainValid && (
+          <button
+            className="btn btn--audit"
+            onClick={handleAudit}
+            disabled={loading}
+            style={{ marginTop: '8px' }}
+          >
+            <Search size={16} />
+            {loading ? "Scanning…" : "Run Forensic Audit"}
+          </button>
+        )}
       </div>
+
+      {auditReport && (
+        <div className="control-section">
+          <div className="section-label">
+            <div className="section-label__dot section-label__dot--danger" />
+            Incident Response
+          </div>
+          <AuditPanel
+            audit={auditReport}
+            onRollback={handleRollback}
+            onRepair={handleRepair}
+            loading={loading}
+          />
+        </div>
+      )}
 
       <div className="control-section">
         <div className="section-label">

@@ -8,3 +8,7 @@ class BlockCreate(BaseModel):
 class TamperRequest(BaseModel):
     index: int
     new_data: str
+
+
+class RollbackRequest(BaseModel):
+    index: int

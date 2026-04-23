@@ -583,6 +583,219 @@ a { color: inherit; text-decoration: none; }
   color: var(--accent-light);
 }
 
+.btn--audit {
+  background: rgba(245, 158, 11, 0.10);
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.btn--audit:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: var(--warning);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.btn--repair {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+.btn--repair:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: var(--success);
+  box-shadow: var(--shadow-glow-success);
+}
+
+.btn--rollback {
+  background: rgba(245, 158, 11, 0.10);
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.btn--rollback:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: var(--warning);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+/* ============================================================
+   SECTION LABEL VARIANT
+   ============================================================ */
+.section-label__dot--danger {
+  background: var(--danger);
+}
+
+/* ============================================================
+   AUDIT PANEL
+   ============================================================ */
+.audit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeInUp 0.3s ease;
+}
+
+.audit-panel__header {
+  margin-bottom: 2px;
+}
+
+.audit-panel__status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.audit-panel__status--danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.audit-panel__status--success {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.audit-panel__status-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.audit-panel__status-detail {
+  font-size: 0.78rem;
+  opacity: 0.85;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.audit-panel__blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.audit-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: border-color 0.2s ease;
+}
+
+.audit-block--critical {
+  border-color: var(--danger-border);
+}
+
+.audit-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.audit-block__badge {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.audit-block__severity {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+.audit-block__severity--critical {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.audit-block__severity--clean {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.audit-finding {
+  padding: 6px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.audit-finding:first-child {
+  border-top: none;
+}
+
+.audit-finding__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.audit-finding--pass .audit-finding__header {
+  color: var(--success);
+}
+
+.audit-finding--fail .audit-finding__header {
+  color: var(--danger);
+}
+
+.audit-finding__check {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.audit-finding__detail {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  padding-left: 18px;
+  line-height: 1.4;
+}
+
+.audit-panel__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.audit-panel__actions-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.audit-panel__actions-hint {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  padding: 0 4px;
+  margin-bottom: 4px;
+}
+
 /* ============================================================
    FORM CARD (right panel)
    ============================================================ */

@@ -71,3 +71,46 @@ export async function tamperBlock(index, newData) {
 
   return data;
 }
+
+export async function auditChain() {
+  const response = await fetch(`${API_BASE}/audit`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to audit chain");
+  }
+
+  return data;
+}
+
+export async function rollbackChain(index) {
+  const response = await fetch(`${API_BASE}/rollback`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ index: Number(index) }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to rollback chain");
+  }
+
+  return data;
+}
+
+export async function repairChain() {
+  const response = await fetch(`${API_BASE}/repair`, {
+    method: "POST",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to repair chain");
+  }
+
+  return data;
+}
