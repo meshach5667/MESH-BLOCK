@@ -1,43 +1,43 @@
 import { Clock } from "lucide-react";
 
 export default function BlockCard({ block }) {
-  // A simple heuristic for visual display, since proof of work is difficulty=3
-  // in normal constraints, it should start with "000". If it doesn't, it's tampered.
   const isTampered = !block.hash.startsWith("000");
 
   return (
-    <div className={`timeline-node ${isTampered ? "tampered" : ""}`}>
-      <div className="timeline-dot" />
-      <div className="block-card-glass">
-        <div className="block-card-header">
-          <div className="block-index">
-            <span className="block-index-label">Block #{block.index}</span>
+    <div className={`timeline__item ${isTampered ? "timeline__item--tampered" : ""}`}>
+      <div className="timeline__dot">
+        <div className="timeline__dot-inner" />
+      </div>
+      <div className="block">
+        <div className="block__header">
+          <div className="block__id">
+            <span className="block__badge">#{block.index}</span>
           </div>
-          <div className="block-time">
-            <Clock size={14} />
-            {new Date(block.timestamp * 1000).toLocaleString()}
+          <div className="block__time">
+            <Clock size={12} />
+            {block.timestamp}
           </div>
         </div>
         
-        <div className="block-card-body">
-          <div className="data-group">
-            <span className="data-label">Payload Data</span>
-            <span className="data-value">{block.data}</span>
+        <div className="block__body">
+          <div className="block__field">
+            <span className="block__field-label">Payload</span>
+            <span className="block__field-value">{block.data}</span>
           </div>
 
-          <div className="data-group">
-            <span className="data-label">Cryptographic Nonce</span>
-            <span className="data-value">{block.nonce}</span>
+          <div className="block__field">
+            <span className="block__field-label">Nonce</span>
+            <span className="block__field-value" style={{ fontFamily: 'var(--font-mono)' }}>{block.nonce}</span>
           </div>
 
-          <div className="data-group">
-            <span className="data-label">Block Hash</span>
-            <span className="data-value hash">{block.hash}</span>
+          <div className="block__field block__field--full">
+            <span className="block__field-label">Block Hash</span>
+            <span className="block__field-value block__field-value--hash">{block.hash}</span>
           </div>
 
-          <div className="data-group">
-            <span className="data-label">Parent Reference</span>
-            <span className="data-value hash">{block.previous_hash}</span>
+          <div className="block__field block__field--full">
+            <span className="block__field-label">Previous Hash</span>
+            <span className="block__field-value block__field-value--hash">{block.previous_hash}</span>
           </div>
         </div>
       </div>

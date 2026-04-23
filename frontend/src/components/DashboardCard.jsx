@@ -1,11 +1,15 @@
-export default function DashboardCard({ title, value, icon: Icon, longText, valueClass = '' }) {
+export default function DashboardCard({ title, value, icon: Icon, valueClass }) {
   return (
-    <div className="metric-card">
-      <div className="metric-card-header">
-        <h3>{title}</h3>
-        {Icon && <Icon className="metric-icon" size={20} />}
+    <div className="stat-card">
+      <div className="stat-card__left">
+        {Icon && (
+          <div className="stat-card__icon">
+            <Icon size={16} />
+          </div>
+        )}
+        <span className="stat-card__label">{title}</span>
       </div>
-      <div className={`metric-value ${longText ? "mono " : ""}${valueClass}`}>
+      <div className={`stat-card__value ${valueClass ? `stat-card__value--${valueClass}` : ''}`}>
         {value}
       </div>
     </div>
